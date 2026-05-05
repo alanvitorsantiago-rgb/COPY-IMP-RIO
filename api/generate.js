@@ -8,40 +8,43 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const API_KEY = process.env.ANTHROPIC_API_KEY;
-  if (!API_KEY) return res.status(500).json({ error: 'ANTHROPIC_API_KEY não configurada' });
+  const API_KEY = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
+  
+  if (!API_KEY || API_KEY.includes('sua-chave')) {
+    return res.status(500).json({ 
+      error: 'Gemini API Key não configurada.',
+      detail: 'Certifique-se de que a variável GEMINI_API_KEY no arquivo .env contém uma chave válida.'
+    });
+  }
 
-  const { mode = 'standard', niche, tone, platform, topic, intent, isPro } = req.body || {};
+  const { mode = 'standard', niche, tone, platform, topic, intent } = req.body || {};
 
   if (!niche || !tone || !platform || !topic) {
     return res.status(400).json({ error: 'Campos obrigatórios: niche, tone, platform, topic' });
   }
 
-  // Build prompt based on mode
-  let prompt = buildPrompt({ mode, niche, tone, platform, topic, intent });
+  const prompt = buildPrompt({ mode, niche, tone, platform, topic, intent });
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20240620',
-        max_tokens: 2000,
-        messages: [{ role: 'user', content: prompt }],
+        contents: [{ parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.7,
+          maxOutputTokens: 2000,
+        }
       }),
     });
 
     const data = await response.json();
     if (!response.ok) {
-      console.error('Anthropic error:', data);
-      return res.status(502).json({ error: 'Erro na API de IA', detail: data });
+      console.error('Gemini error:', data);
+      return res.status(502).json({ error: 'Erro na API do Gemini', detail: data });
     }
 
-    const text = data.content?.map(i => i.text || '').join('') || '';
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
     const copies = parseResponse(text, mode);
 
     return res.status(200).json({ copies, mode });

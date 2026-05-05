@@ -62,7 +62,13 @@ export default function GeneratorScreen() {
         })
       });
 
-      if (!response.ok) throw new Error('Falha na geração das cópias.');
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('Servidor de API não encontrado. Se estiver testando localmente, use "vercel dev" em vez de "npm run dev".');
+        }
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || 'Falha na geração das cópias.');
+      }
 
       const data = await response.json();
       

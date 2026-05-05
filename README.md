@@ -46,7 +46,7 @@ npm run dev
 ### Vercel (recomendado — gratuito)
 1. Crie conta em [vercel.com](https://vercel.com)
 2. Importe este repositório do GitHub
-3. Adicione a variável `VITE_ANTHROPIC_API_KEY` nas configurações
+3. Adicione a variável `GEMINI_API_KEY` nas configurações do projeto com sua chave obtida no Google AI Studio.
 4. Clique em **Deploy** ✅
 
 ### Netlify
