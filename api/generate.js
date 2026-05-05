@@ -8,12 +8,12 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const API_KEY = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
+  const API_KEY = process.env.GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY || 'AIzaSyAfeilT0uiPlU6FomtdqGd1wpcGCuyUVJ4';
   
-  if (!API_KEY || API_KEY.includes('sua-chave')) {
+  if (!API_KEY || API_KEY.includes('sua-chave') || API_KEY.length < 10) {
     return res.status(500).json({ 
-      error: 'Gemini API Key não configurada.',
-      detail: 'Certifique-se de que a variável GEMINI_API_KEY no arquivo .env contém uma chave válida.'
+      error: 'Gemini API Key não encontrada no servidor.',
+      detail: 'Se você estiver usando a Vercel, adicione a variável GEMINI_API_KEY nas configurações do projeto (Environment Variables) no Dashboard da Vercel e faça um novo deploy.'
     });
   }
 
