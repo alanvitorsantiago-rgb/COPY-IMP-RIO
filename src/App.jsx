@@ -99,30 +99,34 @@ export default function App() {
   }, [updateUserPlan, showToast, location.search]);
 
   return (
-    <AnimatePresence mode="wait">
-      {booting ? (
-        <BootSequence key="boot" onComplete={() => setBooting(false)} />
-      ) : (
+    <>
+      <AnimatePresence>
+        {booting && (
+          <BootSequence key="boot" onComplete={() => setBooting(false)} />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence mode="wait">
         <Routes key={location.pathname} location={location}>
           {/* Root Route: Landing or Dashboard */}
           <Route path="/" element={!user ? <LandingScreen /> : <Layout><DashboardScreen /></Layout>} />
+          
+          {/* Auth Route */}
+          <Route path="/auth" element={!user ? <AuthScreen /> : <Navigate to="/" />} />
+          
+          {/* Protected Feature Routes */}
+          <Route element={user ? <Layout /> : <Navigate to="/auth" />}>
+            <Route path="/generator" element={<GeneratorScreen />} />
+            <Route path="/library" element={<LibraryScreen />} />
+            <Route path="/templates" element={<TemplatesScreen />} />
+            <Route path="/upgrade" element={<UpgradeScreen />} />
+            <Route path="/settings" element={<SettingsScreen />} />
+          </Route>
 
-        
-        {/* Auth Route */}
-        <Route path="/auth" element={!user ? <AuthScreen /> : <Navigate to="/" />} />
-        
-        {/* Protected Feature Routes */}
-        <Route element={user ? <Layout /> : <Navigate to="/auth" />}>
-          <Route path="/generator" element={<GeneratorScreen />} />
-          <Route path="/library" element={<LibraryScreen />} />
-          <Route path="/templates" element={<TemplatesScreen />} />
-          <Route path="/upgrade" element={<UpgradeScreen />} />
-          <Route path="/settings" element={<SettingsScreen />} />
-        </Route>
-
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-      )}
-    </AnimatePresence>
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </AnimatePresence>
+    </>
   );
 }
+

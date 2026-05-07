@@ -20,6 +20,16 @@ export default function AuthScreen() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    const timeout = setTimeout(() => {
+      setLoading(currentLoading => {
+        if (currentLoading) {
+          showToast('Tempo de sincronização excedido. Verifique sua conexão.', 'error');
+          return false;
+        }
+        return currentLoading;
+      });
+    }, 15000); // 15s de segurança
+
 
     try {
       if (isLogin) {
@@ -50,12 +60,13 @@ export default function AuthScreen() {
         }
       }
     } catch (error) {
-
       console.error('Auth error:', error.message);
       showToast(error.message || 'Erro na autenticação.', 'error');
     } finally {
+      clearTimeout(timeout);
       setLoading(false);
     }
+
   };
 
   const handleGithubLogin = async () => {
