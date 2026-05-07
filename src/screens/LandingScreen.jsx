@@ -326,18 +326,29 @@ export default function LandingScreen() {
 
       <nav className="navbar">
         <div className="flex items-center gap-3">
-          <div className="h-14 w-14 rounded-full p-0.5 bg-gradient-to-tr from-yellow-400 to-pink-500 shadow-lg shadow-pink-500/20">
-            <div className="w-full h-full rounded-full overflow-hidden">
+          <div style={{ 
+            width: '56px', 
+            height: '56px', 
+            borderRadius: '50%', 
+            padding: '2px', 
+            background: 'linear-gradient(135deg, #FFD700, #FF0080)',
+            boxShadow: '0 0 20px rgba(255, 0, 128, 0.2)',
+            display: 'flex',
+            alignItems: 'center',
+            justify-content: 'center'
+          }}>
+            <div style={{ width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden' }}>
               <img 
                 src="/imperio-logo.jpg" 
                 alt="Logo" 
-                className="w-full h-full object-cover" 
+                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
               />
             </div>
           </div>
         </div>
         <button onClick={() => navigate('/auth')} className="secondary-btn" style={{ padding: '12px 25px', fontSize: '11px' }}>Entrar</button>
       </nav>
+
 
 
 
