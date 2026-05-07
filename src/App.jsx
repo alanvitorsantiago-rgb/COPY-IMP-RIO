@@ -13,7 +13,9 @@ import LibraryScreen from "./screens/LibraryScreen";
 import TemplatesScreen from "./screens/TemplatesScreen";
 import UpgradeScreen from "./screens/UpgradeScreen";
 import SettingsScreen from "./screens/SettingsScreen";
+import LandingScreen from "./screens/LandingScreen";
 import BootSequence from "./components/BootSequence";
+
 import { useState } from "react";
 
 import { AnimatePresence } from 'framer-motion';
@@ -84,10 +86,14 @@ export default function App() {
   return (
     <AnimatePresence mode="wait">
       <Routes key={location.pathname} location={location}>
+        {/* Root Route: Landing or Dashboard */}
+        <Route path="/" element={!user ? <LandingScreen /> : <Layout><DashboardScreen /></Layout>} />
+        
+        {/* Auth Route */}
         <Route path="/auth" element={!user ? <AuthScreen /> : <Navigate to="/" />} />
         
+        {/* Protected Feature Routes */}
         <Route element={user ? <Layout /> : <Navigate to="/auth" />}>
-          <Route path="/" element={<DashboardScreen />} />
           <Route path="/generator" element={<GeneratorScreen />} />
           <Route path="/library" element={<LibraryScreen />} />
           <Route path="/templates" element={<TemplatesScreen />} />
@@ -97,6 +103,7 @@ export default function App() {
 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
+
     </AnimatePresence>
   );
 }
