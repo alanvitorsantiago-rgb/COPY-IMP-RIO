@@ -326,13 +326,16 @@ export default function UpgradeScreen() {
             </div>
             
             <div className="card-price">
-              <span className="price-old">R$ 97</span>
+              <span className="price-old">
+                {billingCycle === 'monthly' ? 'R$ 97' : 'R$ 497'}
+              </span>
               {billingCycle === 'monthly' ? (
-                <>R$ 24,99 <span className="price-sub">/ MÊS</span></>
+                <>R$ 24,90 <span className="price-sub">/ MÊS</span></>
               ) : (
-                <>R$ 197 <span className="price-sub">/ ANO</span> <span className="savings-badge">ECONOMIZE 35%</span></>
+                <>R$ 197 <span className="price-sub">/ ANO</span> <span className="savings-badge">ECONOMIZE 60%</span></>
               )}
             </div>
+
             
             <p style={{ color: '#25d366', fontSize: '10px', fontWeight: 900, textTransform: 'uppercase', marginBottom: '-20px', marginTop: '5px' }}>
               {billingCycle === 'monthly' ? 'Acesso imediato e vitalício à versão 4.0' : 'Melhor custo-benefício p/ profissionais'}
@@ -355,21 +358,63 @@ export default function UpgradeScreen() {
           </div>
         </div>
 
-        {/* Agency Plan (Visual placeholder for robustness) */}
-        <div className="card-wrapper" style={{ opacity: 0.6 }}>
-          <div className="card-inner">
-             <div className="card-label">
-                <Star size={14} /> Agency_Elite
+        {/* Agency / Lifetime Plan */}
+        <div className="card-wrapper active" style={{ 
+          background: 'linear-gradient(135deg, #FFD700, #B8860B, #FFD700)',
+          boxShadow: '0 0 50px rgba(184, 134, 11, 0.2)'
+        }}>
+          <div className="card-inner" style={{ border: '1px solid rgba(255, 215, 0, 0.1)' }}>
+             <div className="card-tag" style={{ background: 'rgba(255, 215, 0, 0.1)', color: '#FFD700', borderColor: 'rgba(255, 215, 0, 0.3)' }}>LIFETIME ACCESS</div>
+             <div className="card-label" style={{ color: '#FFD700' }}>
+                <Star size={14} fill="#FFD700" /> EMPIRE_LIFETIME_v2
              </div>
-             <div className="card-price">EM BREVE</div>
-             <ul className="feature-list">
-                <li className="feature-item"><Check size={14} /> Multi-contas</li>
-                <li className="feature-item"><Check size={14} /> API White-label</li>
-                <li className="feature-item"><Check size={14} /> Treinamento Customizado</li>
+             
+             <div className="card-price">
+                <span className="price-old">R$ 1.997</span>
+                R$ 497 <span className="price-sub">/ ÚNICO</span>
+             </div>
+
+             <div style={{ 
+               background: 'rgba(255, 215, 0, 0.05)', 
+               padding: '10px', 
+               borderRadius: '12px', 
+               marginTop: '15px',
+               border: '1px dashed rgba(255, 215, 0, 0.3)'
+             }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '9px', fontWeight: 900, textTransform: 'uppercase', marginBottom: '5px', color: '#FFD700' }}>
+                  <span>Vagas Limitadas</span>
+                  <span>12/100 DISPONÍVEIS</span>
+                </div>
+                <div style={{ height: '4px', background: 'rgba(255,255,255,0.05)', borderRadius: '2px', overflow: 'hidden' }}>
+                  <motion.div 
+                    initial={{ width: 0 }}
+                    animate={{ width: '12%' }}
+                    transition={{ duration: 2, delay: 0.5 }}
+                    style={{ height: '100%', background: '#FFD700' }} 
+                  />
+                </div>
+             </div>
+
+             <ul className="feature-list" style={{ marginTop: '30px' }}>
+                <li className="feature-item"><Check size={14} color="#FFD700" /> Acesso Vitalício (Sem Mensalidades)</li>
+                <li className="feature-item"><Check size={14} color="#FFD700" /> Dashboard para 5 Sub-contas</li>
+                <li className="feature-item"><Check size={14} color="#FFD700" /> Suporte VIP via WhatsApp</li>
+                <li className="feature-item"><Check size={14} color="#FFD700" /> Treinamento: "Império de Vendas"</li>
+                <li className="feature-item"><Check size={14} color="#FFD700" /> White-label (Sua Marca na IA)</li>
              </ul>
-             <button disabled className="upgrade-btn" style={{ background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.2)' }}>Notificar-me</button>
+
+             <button onClick={() => handleUpgrade('lifetime')} disabled={loading} className="upgrade-btn" style={{ 
+               background: 'linear-gradient(90deg, #B8860B, #FFD700, #B8860B)', 
+               backgroundSize: '200% auto',
+               color: '#000 !important',
+               animation: 'flow 3s linear infinite'
+             }}>
+                {loading ? 'PROCESSANDO...' : 'RESERVAR MINHA VAGA'}
+             </button>
+             <p className="footer-note" style={{ color: 'rgba(255, 215, 0, 0.4)' }}>Oferta única de upgrade vitalício</p>
           </div>
         </div>
+
       </div>
     </div>
   );

@@ -15,14 +15,17 @@ export default async function handler(req, res) {
 
   // Configuração do Plano
   const isAnnual = planType === 'annual';
+  const isLifetime = planType === 'lifetime';
+  
   const planDetails = {
-    id: isAnnual ? 'copyia-pro-anual' : 'copyia-pro-mensal',
-    title: isAnnual ? 'CopyIA PRO — Plano Anual (Economize 35%)' : 'CopyIA PRO — Plano Mensal',
-    price: isAnnual ? 197.00 : 24.90,
-    description: isAnnual 
-      ? 'Acesso ilimitado por 1 ano às ferramentas de IA da CopyIA.' 
-      : 'Acesso ilimitado por 1 mês às ferramentas de IA da CopyIA.'
+    id: isLifetime ? 'copyia-pro-vitalicio' : (isAnnual ? 'copyia-pro-anual' : 'copyia-pro-mensal'),
+    title: isLifetime ? 'CopyIA PRO — ACESSO VITALÍCIO' : (isAnnual ? 'CopyIA PRO — Plano Anual' : 'CopyIA PRO — Plano Mensal'),
+    price: isLifetime ? 497.00 : (isAnnual ? 197.00 : 24.90),
+    description: isLifetime 
+      ? 'Acesso VITALÍCIO sem mensalidades a todas as ferramentas da CopyIA.' 
+      : (isAnnual ? 'Acesso ilimitado por 1 ano às ferramentas de IA da CopyIA.' : 'Acesso ilimitado por 1 mês às ferramentas de IA da CopyIA.')
   };
+
 
   try {
     const preference = {
