@@ -223,8 +223,51 @@ export default function AuthScreen() {
           box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
 
+        .auth-logo-token {
+          width: 120px;
+          height: 120px;
+          padding: 4px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #FFD700, #FF0080, #7928ca);
+          position: relative;
+          margin-bottom: 20px;
+          box-shadow: 0 0 30px rgba(255, 0, 128, 0.2);
+          z-index: 10;
+        }
+
+        .auth-logo-inner {
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          overflow: hidden;
+          border: 2px solid rgba(0,0,0,0.4);
+        }
+
+        .auth-logo-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          scale: 1.1;
+        }
+
+        @keyframes pulse-anim {
+          0% { transform: scale(1); opacity: 0.1; }
+          100% { transform: scale(1.1); opacity: 0.2; }
+        }
+
+        .pulse-layer {
+          position: absolute;
+          inset: -10px;
+          background: #ff0080;
+          filter: blur(20px);
+          border-radius: 50%;
+          z-index: -1;
+          animation: pulse-anim 2s infinite alternate;
+        }
+
         /* Input Fields */
         .form-group {
+
           margin-bottom: 24px;
           display: flex;
           flex-direction: column;
@@ -379,24 +422,24 @@ export default function AuthScreen() {
         animate={{ opacity: 1, y: 0 }}
         className="auth-content"
       >
-        <div className="text-center mb-8 flex flex-col items-center">
+        <div className="text-center mb-6 flex flex-col items-center">
           <motion.div 
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            whileHover={{ scale: 1.05, rotate: 2 }}
-            className="relative w-32 h-32 p-1 rounded-full bg-gradient-to-tr from-yellow-400/80 via-pink-500/80 to-purple-600/80 shadow-[0_0_30px_rgba(255,0,128,0.2)]"
+            className="auth-logo-token"
           >
-            <div className="w-full h-full rounded-full overflow-hidden border-2 border-black/40">
+            <div className="auth-logo-inner">
               <img 
                 src="/imperio-logo.jpg" 
-                alt="Império Universo" 
-                className="w-full h-full object-cover scale-105"
+                alt="Império" 
+                className="auth-logo-img"
               />
             </div>
-            <div className="absolute inset-0 rounded-full border border-white/10 pointer-events-none" />
+            <div className="pulse-layer" />
           </motion.div>
-          <p className="auth-subtitle mt-5 opacity-70">PROTOCOLO UNIVERSO ATIVADO</p>
+          <p className="auth-subtitle">PROTOCOLO UNIVERSO ATIVADO</p>
         </div>
+
 
 
 
