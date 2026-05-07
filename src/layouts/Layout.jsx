@@ -4,7 +4,7 @@ import Sidebar from '../components/Sidebar';
 import useUIStore from '../store/useUIStore';
 import { CheckCircle, AlertCircle, Info, X } from 'lucide-react';
 
-export default function Layout() {
+export default function Layout({ children }) {
   const { toast, hideToast } = useUIStore();
 
   return (
@@ -37,9 +37,10 @@ export default function Layout() {
       {/* Main Content Area */}
       <main className="flex-1 relative z-10 p-6 md:p-10 lg:p-12 overflow-y-auto h-screen custom-scrollbar">
         <div className="max-w-7xl mx-auto pt-4 pb-20">
-          <Outlet />
+          {children || <Outlet />}
         </div>
       </main>
+
 
       {/* Modern Cinematic Toast Notification */}
       <AnimatePresence>

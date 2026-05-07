@@ -16,6 +16,14 @@ export default function BootSequence({ onComplete }) {
   const [currentLine, setCurrentLine] = useState(0);
 
   useEffect(() => {
+    // Segurança: Auto-completa após 5 segundos se travar
+    const safetyTimer = setTimeout(() => {
+      onComplete();
+    }, 5000);
+    return () => clearTimeout(safetyTimer);
+  }, [onComplete]);
+
+  useEffect(() => {
     if (currentLine < LOG_LINES.length) {
       const timer = setTimeout(() => {
         setCurrentLine(prev => prev + 1);
@@ -27,7 +35,19 @@ export default function BootSequence({ onComplete }) {
   }, [currentLine, onComplete]);
 
   return (
-    <div className="fixed inset-0 z-[10000] bg-bg flex flex-col items-center justify-center p-8 font-mono">
+    <motion.div 
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0, transition: { duration: 0.8 } }}
+      className="fixed inset-0 z-[10000] bg-[#050505] flex flex-col items-center justify-center p-8 font-mono"
+    >
+      <button 
+        onClick={onComplete}
+        className="fixed top-10 right-10 text-[10px] text-cyan/30 hover:text-cyan font-bold tracking-widest uppercase border border-cyan/10 hover:border-cyan/40 px-4 py-2 transition-all z-[10001]"
+      >
+        Pular Sincronização
+      </button>
+
+
       {/* Background Decor */}
       <div className="neural-bg" />
       <div className="scanlines" />
@@ -93,6 +113,7 @@ export default function BootSequence({ onComplete }) {
             <Zap size={14} /> POWER_OPTIMIZED
          </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
+

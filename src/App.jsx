@@ -125,26 +125,32 @@ export default function App() {
         )}
       </AnimatePresence>
 
-      <AnimatePresence mode="wait">
-        <Routes key={location.pathname} location={location}>
-          {/* Root Route: Landing or Dashboard */}
-          <Route path="/" element={!user ? <LandingScreen /> : <Layout><DashboardScreen /></Layout>} />
-          
-          {/* Auth Route */}
-          <Route path="/auth" element={!user ? <AuthScreen /> : <Navigate to="/" />} />
-          
-          {/* Protected Feature Routes */}
-          <Route element={user ? <Layout /> : <Navigate to="/auth" />}>
-            <Route path="/generator" element={<GeneratorScreen />} />
-            <Route path="/library" element={<LibraryScreen />} />
-            <Route path="/templates" element={<TemplatesScreen />} />
-            <Route path="/upgrade" element={<UpgradeScreen />} />
-            <Route path="/settings" element={<SettingsScreen />} />
-          </Route>
+      <AnimatePresence>
 
-          <Route path="*" element={<Navigate to="/" />} />
+        <Routes key={location.pathname + (user?.id ? '_auth' : '_public')} location={location}>
+          {!user?.id ? (
+            /* Rotas Públicas */
+            <>
+              <Route path="/" element={<LandingScreen />} />
+              <Route path="/auth" element={<AuthScreen />} />
+              <Route path="*" element={<Navigate to="/" />} />
+            </>
+          ) : (
+            /* Rotas Protegidas */
+            <Route element={<Layout />}>
+              <Route index element={<DashboardScreen />} />
+              <Route path="/generator" element={<GeneratorScreen />} />
+              <Route path="/library" element={<LibraryScreen />} />
+              <Route path="/templates" element={<TemplatesScreen />} />
+              <Route path="/upgrade" element={<UpgradeScreen />} />
+              <Route path="/settings" element={<SettingsScreen />} />
+              <Route path="*" element={<Navigate to="/" />} />
+            </Route>
+          )}
         </Routes>
+
       </AnimatePresence>
+
     </>
   );
 }
