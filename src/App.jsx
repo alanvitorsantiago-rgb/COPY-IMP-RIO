@@ -21,7 +21,19 @@ import { useState } from "react";
 import { AnimatePresence } from 'framer-motion';
 
 export default function App() {
-  const [booting, setBooting] = useState(true);
+  const [booting, setBooting] = useState(() => {
+    // Só mostra o boot uma vez por sessão do navegador
+    if (typeof window !== 'undefined') {
+      return !sessionStorage.getItem('imp_booted');
+    }
+    return true;
+  });
+
+  const handleBootComplete = () => {
+    setBooting(false);
+    sessionStorage.setItem('imp_booted', 'true');
+  };
+
   const setUser = useAppStore((state) => state.setUser);
   const user = useAppStore((state) => state.user);
   const updateUserPlan = useAppStore((state) => state.updateUserPlan);
@@ -75,7 +87,7 @@ export default function App() {
         fetchProfile(session.user);
       }
       // Pequeno delay para garantir que a animação de boot seja vista se for muito rápido
-      if (mounted) setTimeout(() => setBooting(false), 1500);
+      if (mounted) setTimeout(() => handleBootComplete(), 1500);
     };
 
 
@@ -121,7 +133,7 @@ export default function App() {
     <>
       <AnimatePresence>
         {booting && (
-          <BootSequence key="boot" onComplete={() => setBooting(false)} />
+          <BootSequence key="boot" onComplete={handleBootComplete} />
         )}
       </AnimatePresence>
 
