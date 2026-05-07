@@ -379,24 +379,25 @@ export default function AuthScreen() {
         animate={{ opacity: 1, y: 0 }}
         className="auth-content"
       >
-        <div className="text-center mb-10 flex flex-col items-center">
+        <div className="text-center mb-8 flex flex-col items-center">
           <motion.div 
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            whileHover={{ scale: 1.05, rotate: 3 }}
-            className="relative w-44 h-44 p-1.5 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 shadow-[0_0_40px_rgba(255,0,128,0.3)]"
+            whileHover={{ scale: 1.05, rotate: 2 }}
+            className="relative w-32 h-32 p-1 rounded-full bg-gradient-to-tr from-yellow-400/80 via-pink-500/80 to-purple-600/80 shadow-[0_0_30px_rgba(255,0,128,0.2)]"
           >
-            <div className="w-full h-full rounded-full overflow-hidden border-2 border-black/20">
+            <div className="w-full h-full rounded-full overflow-hidden border-2 border-black/40">
               <img 
                 src="/imperio-logo.jpg" 
                 alt="Império Universo" 
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover scale-105"
               />
             </div>
-            <div className="absolute inset-0 rounded-full border border-white/20 pointer-events-none" />
+            <div className="absolute inset-0 rounded-full border border-white/10 pointer-events-none" />
           </motion.div>
-          <p className="auth-subtitle mt-6">PROTOCOLO UNIVERSO ATIVADO</p>
+          <p className="auth-subtitle mt-5 opacity-70">PROTOCOLO UNIVERSO ATIVADO</p>
         </div>
+
 
 
 
