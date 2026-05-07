@@ -23,27 +23,13 @@ export default function AuthScreen() {
 
     try {
       if (isLogin) {
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
 
         if (error) throw error;
-
-        // Fetch profile to get the plan
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('plan, full_name')
-          .eq('id', data.user.id)
-          .single();
-
-        setUser({ 
-          id: data.user.id, 
-          name: profile?.full_name || data.user.email.split('@')[0], 
-          email: data.user.email, 
-          plan: profile?.plan || 'free' 
-        });
-        showToast('Sincronização de Comando Completa.', 'success');
+        showToast('Credenciais Verificadas. Sincronizando...', 'success');
       } else {
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -58,13 +44,13 @@ export default function AuthScreen() {
         if (error) throw error;
 
         if (data.user && data.session) {
-          setUser({ id: data.user.id, name, email: data.user.email, plan: 'free' });
-          showToast('Operador Registrado com Sucesso.', 'success');
+          showToast('Registro Completo. Bem-vindo!', 'success');
         } else {
           showToast('Verifique seu e-mail para confirmar o registro.', 'info');
         }
       }
     } catch (error) {
+
       console.error('Auth error:', error.message);
       showToast(error.message || 'Erro na autenticação.', 'error');
     } finally {
