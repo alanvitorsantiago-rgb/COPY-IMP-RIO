@@ -64,21 +64,40 @@ export default function App() {
     const initAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session && mounted) {
-        await fetchProfile(session.user);
+        // Set otimista inicial
+        setUser({ 
+          id: session.user.id, 
+          email: session.user.email,
+          name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Operador',
+          plan: 'free'
+        });
+        // Busca perfil completo em background
+        fetchProfile(session.user);
       }
       // Pequeno delay para garantir que a animação de boot seja vista se for muito rápido
       if (mounted) setTimeout(() => setBooting(false), 1500);
     };
 
+
     initAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (event === 'SIGNED_IN' && session) {
+        // Primeiro set otimista para garantir redirecionamento imediato
+        setUser({ 
+          id: session.user.id, 
+          email: session.user.email,
+          name: session.user.user_metadata?.full_name || session.user.email?.split('@')[0] || 'Operador',
+          plan: 'free'
+        });
+        
+        // Depois busca o perfil completo (plano PRO, nome real, etc)
         await fetchProfile(session.user);
       } else if (event === 'SIGNED_OUT') {
         setUser(null);
       }
     });
+
 
     return () => {
       mounted = false;

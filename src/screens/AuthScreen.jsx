@@ -33,13 +33,23 @@ export default function AuthScreen() {
 
     try {
       if (isLogin) {
-        const { error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabase.auth.signInWithPassword({
           email,
           password,
         });
 
         if (error) throw error;
-        showToast('Credenciais Verificadas. Sincronizando...', 'success');
+        
+        // Optimistic update: Set user immediately to trigger redirect
+        setUser({
+          id: data.user.id,
+          email: data.user.email,
+          name: data.user.user_metadata?.full_name || data.user.email?.split('@')[0] || 'Operador',
+          plan: 'free' // App.jsx will update this to 'pro' if applicable in a moment
+        });
+
+        showToast('Credenciais Verificadas. Acessando...', 'success');
+        navigate('/'); // Force immediate navigation
       } else {
         const { data, error } = await supabase.auth.signUp({
           email,
@@ -54,12 +64,20 @@ export default function AuthScreen() {
         if (error) throw error;
 
         if (data.user && data.session) {
+          setUser({
+            id: data.user.id,
+            email: data.user.email,
+            name: name,
+            plan: 'free'
+          });
           showToast('Registro Completo. Bem-vindo!', 'success');
+          navigate('/');
         } else {
           showToast('Verifique seu e-mail para confirmar o registro.', 'info');
         }
       }
     } catch (error) {
+
       console.error('Auth error:', error.message);
       showToast(error.message || 'Erro na autenticação.', 'error');
     } finally {
