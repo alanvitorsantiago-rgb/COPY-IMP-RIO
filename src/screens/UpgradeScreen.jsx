@@ -8,13 +8,37 @@ export default function UpgradeScreen() {
   const [billingCycle, setBillingCycle] = useState('monthly'); // 'monthly' or 'annual'
   const isPro = user?.plan === 'pro';
 
-  const handleUpgrade = (planType) => {
-    // Simulated checkout URLs
-    const url = planType === 'annual' 
-      ? 'https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=ANNUAL_ID'
-      : 'https://www.mercadopago.com.br/checkout/v1/redirect?pref_id=MONTHLY_ID';
-    window.location.href = url;
+  const [loading, setLoading] = useState(false);
+
+  const handleUpgrade = async (planType) => {
+    setLoading(true);
+    try {
+      const response = await fetch('/api/create-preference', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userEmail: user?.email,
+          userName: user?.name,
+          planType: planType,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.init_point) {
+        window.location.href = data.init_point;
+      } else {
+        alert('Erro ao iniciar pagamento. Tente novamente mais tarde.');
+        console.error('API Error:', data);
+      }
+    } catch (err) {
+      console.error('Checkout error:', err);
+      alert('Erro de conexão. Verifique sua internet.');
+    } finally {
+      setLoading(false);
+    }
   };
+
 
   const features = [
     { icon: Infinity, text: 'Gerações Ilimitadas de Alta Precisão' },
@@ -323,9 +347,10 @@ export default function UpgradeScreen() {
               ))}
             </ul>
             
-            <button onClick={() => handleUpgrade(billingCycle)} disabled={isPro} className="upgrade-btn">
-              {isPro ? 'System Optimized' : (billingCycle === 'monthly' ? 'Ativar Mensal' : 'Ativar Anual PRO')}
+            <button onClick={() => handleUpgrade(billingCycle)} disabled={isPro || loading} className="upgrade-btn">
+              {loading ? 'PROCESSANDO...' : (isPro ? 'System Optimized' : (billingCycle === 'monthly' ? 'Ativar Mensal' : 'Ativar Anual PRO'))}
             </button>
+
             <p className="footer-note">Garantia de 7 dias // Mercado Pago</p>
           </div>
         </div>

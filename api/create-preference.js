@@ -6,28 +6,39 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { userEmail, userName } = req.body || {};
+  const { userEmail, userName, planType } = req.body || {};
   const ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
 
   if (!ACCESS_TOKEN) {
-    return res.status(500).json({ error: 'MP_ACCESS_TOKEN não configurado na Vercel' });
+    return res.status(500).json({ error: 'MP_ACCESS_TOKEN não configurado' });
   }
+
+  // Configuração do Plano
+  const isAnnual = planType === 'annual';
+  const planDetails = {
+    id: isAnnual ? 'copyia-pro-anual' : 'copyia-pro-mensal',
+    title: isAnnual ? 'CopyIA PRO — Plano Anual (Economize 35%)' : 'CopyIA PRO — Plano Mensal',
+    price: isAnnual ? 197.00 : 24.90,
+    description: isAnnual 
+      ? 'Acesso ilimitado por 1 ano às ferramentas de IA da CopyIA.' 
+      : 'Acesso ilimitado por 1 mês às ferramentas de IA da CopyIA.'
+  };
 
   try {
     const preference = {
       items: [
         {
-          id: 'copyia-pro-mensal',
-          title: 'CopyIA PRO — Gerador de Legendas Ilimitado',
-          description: 'Assinatura mensal do plano PRO. Gerações ilimitadas de copies com IA.',
+          id: planDetails.id,
+          title: planDetails.title,
+          description: planDetails.description,
           quantity: 1,
           currency_id: 'BRL',
-          unit_price: 29.90,
+          unit_price: planDetails.price,
         },
       ],
       payer: {
-        email: userEmail || '',
-        name: userName || '',
+        email: userEmail || 'comprador@email.com',
+        name: userName || 'Cliente CopyIA',
       },
       back_urls: {
         success: 'https://copy-imp-rio.vercel.app/?payment=success',
@@ -36,11 +47,13 @@ export default async function handler(req, res) {
       },
       auto_return: 'approved',
       payment_methods: {
-        excluded_payment_types: [],
+        excluded_payment_types: [
+          { id: 'ticket' } // Excluir boleto se preferir apenas cartão/pix para ativação imediata
+        ],
         installments: 1,
       },
       statement_descriptor: 'COPYIA PRO',
-      external_reference: userEmail || 'user',
+      external_reference: userEmail || 'user_anonymous',
     };
 
     const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
@@ -61,7 +74,7 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
       id: data.id,
-      init_point: data.init_point, // URL de checkout
+      init_point: data.init_point, 
     });
 
   } catch (err) {
@@ -69,3 +82,4 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: 'Erro interno do servidor' });
   }
 }
+
