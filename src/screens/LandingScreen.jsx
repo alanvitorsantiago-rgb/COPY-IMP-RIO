@@ -325,9 +325,12 @@ export default function LandingScreen() {
       `}</style>
 
       <nav className="navbar">
-        <div className="logo">IMPÉRIO COPY</div>
+        <div className="flex items-center gap-3">
+          <img src="/imperio-logo.jpg" alt="Logo" className="h-12 w-auto rounded-lg shadow-[0_0_15px_rgba(255,0,128,0.3)]" />
+        </div>
         <button onClick={() => navigate('/auth')} className="secondary-btn" style={{ padding: '12px 25px', fontSize: '11px' }}>Entrar</button>
       </nav>
+
 
       <header className="hero-section">
         <div className="hero-glow" />

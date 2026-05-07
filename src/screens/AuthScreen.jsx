@@ -379,10 +379,22 @@ export default function AuthScreen() {
         animate={{ opacity: 1, y: 0 }}
         className="auth-content"
       >
-        <div className="text-center">
-          <h1 className="auth-title">IMPÉRIO</h1>
-          <p className="auth-subtitle">A central de inteligência para suas estratégias de venda</p>
+        <div className="text-center mb-10 flex flex-col items-center">
+          <motion.div 
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="relative"
+          >
+            <img 
+              src="/imperio-logo.jpg" 
+              alt="Império Universo" 
+              className="w-40 h-40 rounded-3xl shadow-[0_0_50px_rgba(255,0,128,0.3)] border border-white/5"
+            />
+            <div className="absolute -inset-4 bg-pink-500/10 blur-2xl rounded-full z-[-1] pulse-anim" />
+          </motion.div>
+          <p className="auth-subtitle mt-6">PROTOCOLO DE ACESSO UNIVERSO</p>
         </div>
+
 
         <div className="auth-card">
           <div className="auth-card-inner">

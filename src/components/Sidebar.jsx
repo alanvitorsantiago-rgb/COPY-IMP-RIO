@@ -61,59 +61,49 @@ export default function Sidebar() {
 
         /* Branding */
         .sidebar-brand {
-          padding: 40px 30px;
+          padding: 30px;
           display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 15px;
+          justify-content: center;
+          margin-bottom: 20px;
         }
 
-        .brand-logo-box {
-          width: 60px;
-          height: 60px;
-          border-radius: 18px;
-          background: linear-gradient(135deg, #FF0080, #7928ca, #22d3ee);
+        .brand-logo-container {
+          position: relative;
+          width: 180px;
+          height: 180px;
           display: flex;
           align-items: center;
           justify-content: center;
-          box-shadow: 0 10px 20px rgba(121, 40, 202, 0.3);
+          border-radius: 24px;
+          background: rgba(255, 255, 255, 0.03);
+          backdrop-filter: blur(10px);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+          overflow: hidden;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .brand-logo-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
           position: relative;
+          z-index: 2;
         }
 
-        .brand-logo-box::after {
-          content: '';
+        .logo-glow {
           position: absolute;
-          inset: -2px;
-          background: linear-gradient(135deg, #FF0080, #7928ca, #22d3ee);
-          border-radius: 20px;
-          z-index: -1;
-          filter: blur(8px);
-          opacity: 0.5;
+          inset: -20px;
+          background: radial-gradient(circle at center, rgba(255, 0, 128, 0.3) 0%, transparent 70%);
+          z-index: 1;
+          filter: blur(20px);
+          animation: pulse-glow 4s infinite alternate;
         }
 
-        .brand-name {
-          font-size: 20px;
-          font-weight: 900;
-          letter-spacing: -0.02em;
-          text-transform: uppercase;
-          text-align: center;
-          line-height: 1;
+        @keyframes pulse-glow {
+          0% { opacity: 0.3; transform: scale(0.9); }
+          100% { opacity: 0.6; transform: scale(1.1); }
         }
 
-        .brand-name span {
-          background: linear-gradient(90deg, #FF0080, #FF8A00);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-        }
-
-        .brand-tag {
-          font-size: 9px;
-          font-weight: 800;
-          text-transform: uppercase;
-          letter-spacing: 0.4em;
-          color: rgba(255, 255, 255, 0.2);
-          margin-top: 5px;
-        }
 
         /* Navigation */
         .sidebar-nav {
@@ -287,14 +277,19 @@ export default function Sidebar() {
 
       {/* Header / Brand */}
       <div className="sidebar-brand">
-        <div className="brand-logo-box">
-          <Sparkles size={28} color="#fff" />
-        </div>
-        <div className="brand-info">
-          <h1 className="brand-name">IMPÉRIO <span>COPY</span></h1>
-          <p className="brand-tag">Cyber Command</p>
-        </div>
+        <motion.div 
+          whileHover={{ scale: 1.05 }}
+          className="brand-logo-container"
+        >
+          <img 
+            src="/imperio-logo.jpg" 
+            alt="Império Universo" 
+            className="brand-logo-img"
+          />
+          <div className="logo-glow" />
+        </motion.div>
       </div>
+
 
       {/* Navigation */}
       <nav className="sidebar-nav">
