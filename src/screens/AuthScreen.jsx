@@ -383,22 +383,21 @@ export default function AuthScreen() {
           <motion.div 
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="relative"
+            whileHover={{ scale: 1.05, rotate: 3 }}
+            className="relative w-44 h-44 p-1.5 rounded-full bg-gradient-to-tr from-yellow-400 via-pink-500 to-purple-600 shadow-[0_0_40px_rgba(255,0,128,0.3)]"
           >
-            <img 
-              src="/imperio-logo.jpg" 
-              alt="Império Universo" 
-              className="w-48 h-48 object-contain"
-              style={{
-                maskImage: 'radial-gradient(circle at center, black 40%, transparent 75%)',
-                WebkitMaskImage: 'radial-gradient(circle at center, black 40%, transparent 75%)',
-                filter: 'contrast(1.1) brightness(1.2) drop-shadow(0 0 30px rgba(255, 0, 128, 0.5))'
-              }}
-            />
-            <div className="absolute inset-0 bg-pink-500/10 blur-3xl rounded-full z-[-1] animate-pulse" />
+            <div className="w-full h-full rounded-full overflow-hidden border-2 border-black/20">
+              <img 
+                src="/imperio-logo.jpg" 
+                alt="Império Universo" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="absolute inset-0 rounded-full border border-white/20 pointer-events-none" />
           </motion.div>
-          <p className="auth-subtitle mt-4">PROTOCOLO DE ACESSO UNIVERSO</p>
+          <p className="auth-subtitle mt-6">PROTOCOLO UNIVERSO ATIVADO</p>
         </div>
+
 
 
 

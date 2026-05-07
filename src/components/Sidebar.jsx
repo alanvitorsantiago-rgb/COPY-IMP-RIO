@@ -68,30 +68,43 @@ export default function Sidebar() {
 
         .brand-logo-container {
           position: relative;
-          width: 220px;
-          height: 220px;
+          width: 160px;
+          height: 160px;
           display: flex;
           align-items: center;
           justify-content: center;
+          border-radius: 50%;
+          padding: 8px;
+          background: linear-gradient(135deg, #FFD700, #FF0080, #7928ca);
+          box-shadow: 
+            0 0 20px rgba(255, 0, 128, 0.3),
+            inset 0 0 15px rgba(0, 0, 0, 0.5);
+          overflow: hidden;
         }
 
         .brand-logo-img {
           width: 100%;
           height: 100%;
-          object-fit: contain;
-          position: relative;
-          z-index: 2;
-          /* Magic: Fading out the square background */
-          mask-image: radial-gradient(circle at center, black 40%, transparent 75%);
-          -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 75%);
-          filter: contrast(1.1) brightness(1.2) drop-shadow(0 0 20px rgba(255, 0, 128, 0.4));
-          transition: all 0.5s ease;
+          object-fit: cover;
+          border-radius: 50%;
+          filter: contrast(1.1) brightness(1.1);
+          transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .brand-logo-container::after {
+          content: '';
+          position: absolute;
+          inset: 4px;
+          border-radius: 50%;
+          border: 2px solid rgba(255, 255, 255, 0.1);
+          pointer-events: none;
+          z-index: 3;
         }
 
         .brand-logo-container:hover .brand-logo-img {
-          filter: contrast(1.2) brightness(1.3) drop-shadow(0 0 30px rgba(255, 0, 128, 0.6));
-          transform: scale(1.05);
+          transform: scale(1.1) rotate(5deg);
         }
+
 
         .logo-glow {
           position: absolute;
