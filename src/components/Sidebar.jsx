@@ -61,43 +61,48 @@ export default function Sidebar() {
 
         /* Branding */
         .sidebar-brand {
-          padding: 30px;
+          padding: 40px 20px;
           display: flex;
           justify-content: center;
-          margin-bottom: 20px;
         }
 
         .brand-logo-container {
           position: relative;
-          width: 180px;
-          height: 180px;
+          width: 220px;
+          height: 220px;
           display: flex;
           align-items: center;
           justify-content: center;
-          border-radius: 24px;
-          background: rgba(255, 255, 255, 0.03);
-          backdrop-filter: blur(10px);
-          border: 1px solid rgba(255, 255, 255, 0.08);
-          overflow: hidden;
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
         }
 
         .brand-logo-img {
           width: 100%;
           height: 100%;
-          object-fit: cover;
+          object-fit: contain;
           position: relative;
           z-index: 2;
+          /* Magic: Fading out the square background */
+          mask-image: radial-gradient(circle at center, black 40%, transparent 75%);
+          -webkit-mask-image: radial-gradient(circle at center, black 40%, transparent 75%);
+          filter: contrast(1.1) brightness(1.2) drop-shadow(0 0 20px rgba(255, 0, 128, 0.4));
+          transition: all 0.5s ease;
+        }
+
+        .brand-logo-container:hover .brand-logo-img {
+          filter: contrast(1.2) brightness(1.3) drop-shadow(0 0 30px rgba(255, 0, 128, 0.6));
+          transform: scale(1.05);
         }
 
         .logo-glow {
           position: absolute;
-          inset: -20px;
-          background: radial-gradient(circle at center, rgba(255, 0, 128, 0.3) 0%, transparent 70%);
+          width: 120px;
+          height: 120px;
+          background: radial-gradient(circle at center, rgba(255, 0, 128, 0.4) 0%, transparent 70%);
           z-index: 1;
-          filter: blur(20px);
-          animation: pulse-glow 4s infinite alternate;
+          filter: blur(30px);
+          animation: pulse-glow 3s infinite alternate;
         }
+
 
         @keyframes pulse-glow {
           0% { opacity: 0.3; transform: scale(0.9); }

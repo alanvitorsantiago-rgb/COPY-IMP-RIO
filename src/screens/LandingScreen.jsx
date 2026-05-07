@@ -326,10 +326,20 @@ export default function LandingScreen() {
 
       <nav className="navbar">
         <div className="flex items-center gap-3">
-          <img src="/imperio-logo.jpg" alt="Logo" className="h-12 w-auto rounded-lg shadow-[0_0_15px_rgba(255,0,128,0.3)]" />
+          <img 
+            src="/imperio-logo.jpg" 
+            alt="Logo" 
+            className="h-16 w-auto" 
+            style={{
+              maskImage: 'radial-gradient(circle at center, black 40%, transparent 80%)',
+              WebkitMaskImage: 'radial-gradient(circle at center, black 40%, transparent 80%)',
+              filter: 'contrast(1.1) brightness(1.2) drop-shadow(0 0 15px rgba(255, 0, 128, 0.4))'
+            }}
+          />
         </div>
         <button onClick={() => navigate('/auth')} className="secondary-btn" style={{ padding: '12px 25px', fontSize: '11px' }}>Entrar</button>
       </nav>
+
 
 
       <header className="hero-section">
