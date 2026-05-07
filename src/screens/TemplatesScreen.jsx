@@ -16,18 +16,34 @@ export default function TemplatesScreen() {
     <div className="templates-module">
       <style>{`
         .templates-module {
-          max-width: 1200px;
+          max-width: 1400px;
           margin: 0 auto;
-          padding: 40px 20px;
+          padding: 20px 40px;
+
           font-family: 'Outfit', sans-serif;
           color: #fff;
         }
 
         .header-section {
-          margin-bottom: 60px;
+          margin-bottom: 40px;
           display: flex;
-          flex-direction: column;
-          gap: 20px;
+          justify-content: space-between;
+          align-items: flex-end;
+          gap: 30px;
+        }
+
+        @media (max-width: 900px) {
+          .header-section {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+        }
+
+        .search-row {
+          display: flex;
+          gap: 12px;
+          width: 100%;
+          max-width: 500px;
         }
 
         .metallic-title {
@@ -67,34 +83,44 @@ export default function TemplatesScreen() {
 
         .template-grid {
           display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-          gap: 30px;
+          grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+          gap: 24px;
+          width: 100%;
+        }
+
+        @media (max-width: 768px) {
+          .template-grid {
+            grid-template-columns: 1fr;
+          }
         }
 
         .template-card-wrapper {
           position: relative;
           padding: 1px;
-          border-radius: 35px;
+          border-radius: 28px;
           background: rgba(255, 255, 255, 0.05);
-          transition: all 0.3s;
+          transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
         }
 
         .template-card-wrapper:hover {
           background: linear-gradient(135deg, #FF0080, #7928ca);
-          transform: translateY(-5px);
-          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+          transform: translateY(-8px) scale(1.01);
+          box-shadow: 0 30px 60px rgba(0, 0, 0, 0.6);
+          z-index: 10;
         }
 
         .template-card-inner {
-          background: #0d0d0d !important;
-          border-radius: 34px;
-          padding: 35px;
+          background: #0a0a0c !important;
+          border-radius: 27px;
+          padding: 24px;
           height: 100%;
           display: flex;
           flex-direction: column;
           position: relative;
           overflow: hidden;
+          border: 1px solid rgba(255, 255, 255, 0.03);
         }
+
 
         .pro-badge {
           position: absolute;
