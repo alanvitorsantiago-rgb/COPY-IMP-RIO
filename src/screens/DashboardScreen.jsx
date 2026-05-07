@@ -455,11 +455,11 @@ export default function DashboardScreen() {
             Status do Sistema
           </div>
           {[
-            { label: 'IA Geração', val: 'Online', color: '#25d366' },
+            { label: 'IA de Geração', val: 'Online', color: '#25d366' },
             { label: 'Protocolo Omega', val: isPro ? 'Ativo' : 'PRO Only', color: isPro ? '#25d366' : 'rgba(255,255,255,0.2)' },
-            { label: 'Biblioteca', val: 'Online', color: '#25d366' },
-            { label: 'Mercado Pago', val: 'Conectado', color: '#25d366' },
-            { label: 'Supabase Auth', val: 'Online', color: '#25d366' },
+            { label: 'Modelo de IA', val: 'v4.0 Elite', color: '#22d3ee' },
+            { label: 'Copies Gerados', val: `${todayUsage} hoje`, color: '#FF0080' },
+            { label: 'Plano Atual', val: isPro ? '👑 PRO Ativo' : 'Free — Limitado', color: isPro ? '#FFD700' : 'rgba(255,255,255,0.3)' },
           ].map(({ label, val, color }) => (
             <div key={label} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 0', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
               <span style={{ fontSize: '12px', fontWeight: 700, color: 'rgba(255,255,255,0.55)' }}>{label}</span>
