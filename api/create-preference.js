@@ -6,8 +6,9 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const { userEmail, userName, planType } = req.body || {};
+  const { userEmail, userName, planType, userId } = req.body || {};
   const ACCESS_TOKEN = process.env.MP_ACCESS_TOKEN;
+
 
   if (!ACCESS_TOKEN) {
     return res.status(500).json({ error: 'MP_ACCESS_TOKEN não configurado' });
@@ -56,8 +57,9 @@ export default async function handler(req, res) {
         installments: 1,
       },
       statement_descriptor: 'COPYIA PRO',
-      external_reference: userEmail || 'user_anonymous',
+      external_reference: userId || userEmail || 'user_anonymous',
     };
+
 
     const response = await fetch('https://api.mercadopago.com/checkout/preferences', {
       method: 'POST',

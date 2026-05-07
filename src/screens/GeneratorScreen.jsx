@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+
 import { 
   Sparkles, Layers, MessageSquare, ChevronRight, Copy, Save, Check, RefreshCw, Zap, Activity, Dna, Target, ArrowRight
 } from 'lucide-react';
@@ -8,17 +9,22 @@ import useAppStore from '../store/useAppStore';
 import useUIStore from '../store/useUIStore';
 import AIPrediction from '../components/AIPrediction';
 import HeatmapText from '../components/HeatmapText';
-import { PLATFORMS, TONES, EMOTIONAL_INTENTS, DAILY_LIMIT } from '../utils/constants';
+import { PLATFORMS, TONES, EMOTIONAL_INTENTS, DAILY_LIMIT, MODES } from '../utils/constants';
+
 import { supabase } from '../utils/supabase';
 
 export default function GeneratorScreen() {
   const location = useLocation();
+  const navigate = useNavigate();
   const { user, addHistory, getTodayUsage } = useAppStore();
   const { showToast } = useUIStore();
+
   
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState([]);
+  const [activeResultIndex, setActiveResultIndex] = useState(0);
+
 
   const [formData, setFormData] = useState({
     platform: location.state?.platform || 'instagram',
@@ -38,10 +44,18 @@ export default function GeneratorScreen() {
       return;
     }
 
+    const selectedMode = MODES.find(m => m.id === formData.mode);
+    if (selectedMode && !selectedMode.free && user?.plan !== 'pro') {
+      showToast('Este modo é exclusivo para membros PRO. Faça upgrade!', 'error');
+      navigate('/upgrade');
+      return;
+    }
+
     if (todayUsage >= DAILY_LIMIT && user?.plan === 'free') {
       showToast('Limite diário atingido. Faça upgrade para continuar!', 'error');
       return;
     }
+
 
     setLoading(true);
     setStep(3);
@@ -58,8 +72,10 @@ export default function GeneratorScreen() {
           platform: formData.platform,
           topic: formData.product,
           intent: formData.intent,
-          isPro: user?.plan === 'pro'
+          isPro: user?.plan === 'pro',
+          userId: user?.id
         })
+
       });
 
       if (!response.ok) {
@@ -72,14 +88,18 @@ export default function GeneratorScreen() {
 
       const data = await response.json();
       
-      // Data format from API: { copies: [ { copy, score } ] or [ string ] }
+      // Data format from API: { copies: [ { copy, score, radarData, tip } ] }
       const formattedResults = data.copies.map((c, idx) => ({
         id: Date.now() + idx,
         text: typeof c === 'object' ? c.copy : c,
-        score: typeof c === 'object' ? c.score : (85 + Math.floor(Math.random() * 10))
+        score: typeof c === 'object' ? c.score : (85 + Math.floor(Math.random() * 10)),
+        radarData: c.radarData || [],
+        tip: c.tip || ''
       }));
 
       setResults(formattedResults);
+      setActiveResultIndex(0);
+
 
       // 2. Save to Supabase (if logged in)
       if (user?.id) {
@@ -314,6 +334,18 @@ export default function GeneratorScreen() {
                 </div>
               </div>
               <div className="input-group">
+                <label className="input-label">Modo de Geração</label>
+                <div className="neon-input-wrapper">
+                  <select className="cyber-input" value={formData.mode} onChange={(e) => setFormData({...formData, mode: e.target.value})}>
+                    {MODES.map(m => (
+                      <option key={m.id} value={m.id} style={{ background: '#050507' }}>
+                        {m.label} {!m.free && '👑 PRO'}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className="input-group">
                 <label className="input-label">Nicho de Atuação</label>
                 <div className="neon-input-wrapper">
                   <input className="cyber-input" placeholder="Ex: Emagrecimento, Dropshipping..." value={formData.niche} onChange={(e) => setFormData({...formData, niche: e.target.value})} />
@@ -376,43 +408,89 @@ export default function GeneratorScreen() {
              ) : (
                <div style={{ display: 'grid', gridTemplateColumns: '1fr 320px', gap: '40px' }}>
                  <div className="results-list">
-                    {results.map((res, i) => (
-                      <div key={res.id} className="result-card-wrapper">
-                        <div className="result-card-inner">
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                            <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                              <div style={{ width: '50px', height: '50px', borderRadius: '15px', background: 'rgba(34, 211, 238, 0.1)', display: 'flex', alignItems: 'center', justifyCenter: 'center', color: '#22d3ee', display: 'flex', justifyContent: 'center' }}>
-                                <Target size={24} />
-                              </div>
-                              <p style={{ fontWeight: 900, fontSize: '18px' }}>Variação #{i+1}</p>
-                            </div>
-                            <div style={{ display: 'flex', gap: '10px' }}>
-                              <button onClick={() => copyToClipboard(res.text)} style={{ width: '44px', height: '44px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Copy size={20} /></button>
-                            </div>
-                          </div>
-                          
-                          <div className="copy-output-box">
-                            <HeatmapText text={res.text} />
-                          </div>
+                    {results.map((res, i) => {
+                      const isCalendar = formData.mode === 'calendar';
+                      const isStrategyList = isCalendar && i === 0;
 
-                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                             <div className="score-badge">
-                                <Activity size={16} color="#22d3ee" />
-                                <span className="score-value">Score: {res.score}%</span>
-                             </div>
-                             <button style={{ background: 'transparent', border: 'none', color: '#ff0080', fontWeight: 900, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.2em', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                               <Dna size={18} /> Mutação Genética
-                             </button>
+                      if (isStrategyList) {
+                        return (
+                          <div key={res.id} className="result-card-wrapper" style={{ gridColumn: '1 / -1' }}>
+                            <div className="result-card-inner" style={{ border: '1px solid #7928ca' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '15px', marginBottom: '20px' }}>
+                                <div style={{ width: '50px', height: '50px', borderRadius: '15px', background: 'rgba(121, 40, 202, 0.2)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#7928ca' }}>
+                                  <Layers size={24} />
+                                </div>
+                                <h3 style={{ fontSize: '24px', fontWeight: 900 }}>📅 Mapa Estratégico: 30 Dias</h3>
+                              </div>
+                              <div style={{ 
+                                background: 'rgba(255,255,255,0.02)', 
+                                padding: '30px', 
+                                borderRadius: '20px', 
+                                whiteSpace: 'pre-wrap',
+                                fontSize: '14px',
+                                color: 'rgba(255,255,255,0.8)',
+                                lineHeight: '1.8',
+                                columns: '2',
+                                gap: '40px'
+                              }}>
+                                {res.text}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      return (
+                        <div key={res.id} className="result-card-wrapper" onClick={() => setActiveResultIndex(i)}>
+                          <div className={`result-card-inner ${activeResultIndex === i ? 'active' : ''}`} style={{
+                            border: activeResultIndex === i ? '1px solid #ff0080' : '1px solid rgba(255,255,255,0.06)',
+                            boxShadow: activeResultIndex === i ? '0 0 30px rgba(255,0,128,0.1)' : 'none',
+                            cursor: 'pointer',
+                            transition: 'all 0.3s'
+                          }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
+                                <div style={{ width: '50px', height: '50px', borderRadius: '15px', background: activeResultIndex === i ? 'rgba(255,0,128,0.1)' : 'rgba(34, 211, 238, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: activeResultIndex === i ? '#ff0080' : '#22d3ee' }}>
+                                  <Target size={24} />
+                                </div>
+
+                                <p style={{ fontWeight: 900, fontSize: '18px' }}>
+                                  {isCalendar ? `Asset de Elite #${i}` : `Variação #${i+1}`}
+                                </p>
+                              </div>
+                              <div style={{ display: 'flex', gap: '10px' }}>
+                                <button onClick={() => copyToClipboard(res.text)} style={{ width: '44px', height: '44px', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)', background: 'transparent', color: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><Copy size={20} /></button>
+                              </div>
+                            </div>
+                            
+                            <div className="copy-output-box">
+                              <HeatmapText text={res.text} />
+                            </div>
+
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                               <div className="score-badge">
+                                  <Activity size={16} color="#22d3ee" />
+                                  <span className="score-value">Score: {res.score}%</span>
+                               </div>
+                               <button style={{ background: 'transparent', border: 'none', color: '#ff0080', fontWeight: 900, fontSize: '11px', textTransform: 'uppercase', letterSpacing: '0.2em', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                 <Dna size={18} /> Mutação Genética
+                               </button>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
+
                     <button onClick={() => setStep(1)} style={{ width: '100%', padding: '40px', border: '2px dashed rgba(255,255,255,0.1)', borderRadius: '40px', background: 'transparent', color: 'rgba(255,255,255,0.3)', fontWeight: 900, fontSize: '16px', textTransform: 'uppercase', letterSpacing: '0.2em', cursor: 'pointer' }}>Gerar Novas Variações</button>
                  </div>
                  <div className="sidebar-stats">
                     <div className="form-card" style={{ padding: '30px', width: '100%', marginBottom: '30px' }}>
-                       <h3 style={{ fontSize: '12px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '30px' }}>Performance IA</h3>
-                       <AIPrediction />
+                       <h3 style={{ fontSize: '12px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em', marginBottom: '30px' }}>Consultoria de IA</h3>
+                       <AIPrediction 
+                         score={results[activeResultIndex]?.score} 
+                         radarData={results[activeResultIndex]?.radarData}
+                         tip={results[activeResultIndex]?.tip}
+                       />
                     </div>
                     <div className="form-card" style={{ padding: '30px', width: '100%', background: 'linear-gradient(135deg, rgba(255,0,128,0.1), transparent)' }}>
                        <Zap size={32} color="#ff0080" style={{ marginBottom: '20px' }} />

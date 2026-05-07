@@ -53,7 +53,11 @@ export const MODES = [
   { id: "multistyle", label: "🎭 Multi-Estilo", desc: "1 copy em 4 estilos diferentes", credits: 3, free: false },
   { id: "score", label: "📊 Score Mode", desc: "Copies com análise de conversão", credits: 2, free: false },
   { id: "viral", label: "🚀 Viral Mode", desc: "Otimizado para engajamento máximo", credits: 2, free: false },
+  { id: "calendar", label: "📅 Calendário 30 Dias", desc: "Plano estratégico completo para o mês", credits: 5, free: false },
+  { id: "mirror", label: "🪞 Modo Espelho", desc: "IA que aprende e replica seu estilo", credits: 3, free: false },
 ];
+
+
 
 export const EMOTIONAL_INTENTS = [
   { id: "venda", label: "💰 Venda Direta", desc: "Foco em converter agora" },

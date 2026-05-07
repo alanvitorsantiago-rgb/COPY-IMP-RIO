@@ -1,12 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   User, Shield, CreditCard, LogOut, Bell, Zap,
   ChevronRight, Check, Crown, Lock, Infinity, Star,
-  Globe, Moon, Palette, ToggleLeft, ToggleRight, Activity
+  Globe, Moon, Palette, ToggleLeft, ToggleRight, Activity,
+  Brain, Trash2, Plus
 } from 'lucide-react';
 import useAppStore from '../store/useAppStore';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '../utils/supabase';
+import useUIStore from '../store/useUIStore';
+
 
 // --- Toggle Component ---
 function Toggle({ enabled, onToggle, color = '#ff0080' }) {
@@ -62,6 +66,7 @@ function SectionHeader({ icon: Icon, label, color = '#ff0080' }) {
 
 export default function SettingsScreen() {
   const { user, logout } = useAppStore();
+  const { showToast } = useUIStore();
   const navigate = useNavigate();
   const isPro = user?.plan === 'pro' || user?.plan === 'lifetime';
 
@@ -74,6 +79,60 @@ export default function SettingsScreen() {
   });
 
   const [showDanger, setShowDanger] = useState(false);
+  const [trainingExamples, setTrainingExamples] = useState([]);
+  const [newExample, setNewExample] = useState('');
+  const [loadingTraining, setLoadingTraining] = useState(false);
+
+  useEffect(() => {
+    if (user?.id) fetchTraining();
+  }, [user?.id]);
+
+  const fetchTraining = async () => {
+    const { data, error } = await supabase
+      .from('user_training')
+      .select('*')
+      .order('created_at', { ascending: false });
+    
+    if (error) console.error('Error fetching training:', error);
+    else setTrainingExamples(data || []);
+  };
+
+  const handleAddTraining = async () => {
+    if (!newExample.trim()) return;
+    if (!isPro) {
+      showToast('O Modo Espelho é exclusivo para membros PRO.', 'error');
+      return;
+    }
+    
+    setLoadingTraining(true);
+    const { data, error } = await supabase
+      .from('user_training')
+      .insert([{ user_id: user.id, content: newExample.trim() }])
+      .select();
+
+    if (error) {
+      showToast('Erro ao salvar treinamento.', 'error');
+    } else {
+      setTrainingExamples([data[0], ...trainingExamples]);
+      setNewExample('');
+      showToast('Estilo aprendido com sucesso!', 'success');
+    }
+    setLoadingTraining(false);
+  };
+
+  const handleDeleteTraining = async (id) => {
+    const { error } = await supabase
+      .from('user_training')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      showToast('Erro ao excluir treinamento.', 'error');
+    } else {
+      setTrainingExamples(trainingExamples.filter(ex => ex.id !== id));
+      showToast('Exemplo removido.', 'success');
+    }
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -85,6 +144,7 @@ export default function SettingsScreen() {
   const userInitials = user?.name
     ? user.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2)
     : '??';
+
 
   return (
     <div className="settings-module">
@@ -384,11 +444,90 @@ export default function SettingsScreen() {
                 <div className="row-label">Idioma da Interface</div>
                 <div className="row-sub">Língua dos prompts de IA</div>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'rgba(255,255,255,0.35)', fontSize: '11px', fontWeight: 700 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'rgba(255,255,255,0.35)', fontSize: '11px', fontWeight: 700 }}>
                 <Globe size={14} /> Português BR
               </div>
             </div>
           </motion.div>
+
+          {/* AI Training / Mirror Mode */}
+          <motion.div
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.18 }}
+            className="settings-card"
+            style={!isPro ? { opacity: 0.6, position: 'relative', overflow: 'hidden' } : {}}
+          >
+            {!isPro && (
+              <div style={{
+                position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)',
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
+                zIndex: 10, textAlign: 'center', padding: '20px'
+              }}>
+                <Lock size={32} color="#FFD700" style={{ marginBottom: '15px' }} />
+                <p style={{ fontWeight: 900, fontSize: '14px', color: '#FFD700' }}>MODO ESPELHO EXCLUSIVO</p>
+                <p style={{ fontSize: '10px', color: 'rgba(255,255,255,0.6)', marginTop: '5px' }}>Faça upgrade para a IA aprender seu estilo pessoal.</p>
+              </div>
+            )}
+            
+            <SectionHeader icon={Brain} label="Treinamento IA (Modo Espelho)" color="#ff0080" />
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.4)', marginBottom: '20px', lineHeight: 1.5 }}>
+              Cole aqui exemplos das suas melhores copies. Nossa rede neural vai analisar seu padrão de escrita, gírias e tom de voz para te replicar com perfeição.
+            </p>
+
+            <div style={{ position: 'relative', marginBottom: '20px' }}>
+              <textarea
+                value={newExample}
+                onChange={(e) => setNewExample(e.target.value)}
+                placeholder="Cole um exemplo de copy que você escreveu e que converteu muito..."
+                style={{
+                  width: '100%', height: '120px', background: 'rgba(0,0,0,0.2)',
+                  border: '1px solid rgba(255,255,255,0.1)', borderRadius: '15px',
+                  padding: '15px', color: '#fff', fontSize: '13px', resize: 'none',
+                  outline: 'none', fontFamily: 'inherit'
+                }}
+              />
+              <button
+                onClick={handleAddTraining}
+                disabled={loadingTraining || !newExample.trim()}
+                style={{
+                  position: 'absolute', bottom: '15px', right: '15px',
+                  background: 'linear-gradient(90deg, #ff0080, #7928ca)',
+                  border: 'none', borderRadius: '10px', padding: '8px 15px',
+                  color: '#fff', fontSize: '10px', fontWeight: 900,
+                  textTransform: 'uppercase', letterSpacing: '0.1em',
+                  cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px',
+                  opacity: (loadingTraining || !newExample.trim()) ? 0.5 : 1
+                }}
+              >
+                {loadingTraining ? 'Analisando...' : <><Plus size={14} /> Aprender Estilo</>}
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {trainingExamples.map((ex) => (
+                <div key={ex.id} style={{
+                  background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)',
+                  padding: '12px 15px', borderRadius: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'
+                }}>
+                  <div style={{ 
+                    fontSize: '11px', color: 'rgba(255,255,255,0.6)', 
+                    whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '80%' 
+                  }}>
+                    "{ex.content}"
+                  </div>
+                  <button 
+                    onClick={() => handleDeleteTraining(ex.id)}
+                    style={{ background: 'transparent', border: 'none', color: 'rgba(239, 68, 68, 0.4)', cursor: 'pointer' }}
+                  >
+                    <Trash2 size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
 
           {/* Preferences Toggles */}
           <motion.div

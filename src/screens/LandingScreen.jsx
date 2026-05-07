@@ -241,35 +241,76 @@ export default function LandingScreen() {
         }
 
         /* Testimonials */
-        .trust-section {
-          padding: 100px 10%;
-          background: rgba(121, 40, 202, 0.02);
-          text-align: center;
+        .testimonial-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+          gap: 24px;
+          margin-top: 60px;
         }
 
-        .stats-grid {
+        .testimonial-card {
+          background: rgba(255, 255, 255, 0.02);
+          border: 1px solid rgba(255, 255, 255, 0.05);
+          border-radius: 24px;
+          padding: 30px;
+          text-align: left;
+        }
+
+        .user-info {
           display: flex;
+          align-items: center;
+          gap: 12px;
+          margin-bottom: 20px;
+        }
+
+        .user-avatar {
+          width: 44px;
+          height: 44px;
+          border-radius: 50%;
+          background: linear-gradient(135deg, #ff0080, #7928ca);
+          display: flex;
+          align-items: center;
           justify-content: center;
-          gap: 80px;
-          margin-bottom: 100px;
-        }
-
-        .stat-item {
-          text-align: center;
-        }
-
-        .stat-val {
-          font-size: 48px;
           font-weight: 900;
-          display: block;
+          font-size: 14px;
         }
 
-        .stat-lbl {
-          font-size: 12px;
-          font-weight: 900;
-          text-transform: uppercase;
-          letter-spacing: 0.2em;
-          color: rgba(255, 255, 255, 0.3);
+        /* FAQ */
+        .faq-section {
+          padding: 100px 10%;
+          max-width: 800px;
+          margin: 0 auto;
+        }
+
+        .faq-item {
+          border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+          padding: 24px 0;
+          text-align: left;
+          cursor: pointer;
+        }
+
+        .faq-question {
+          font-size: 18px;
+          font-weight: 700;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+        }
+
+        .faq-answer {
+          font-size: 14px;
+          color: rgba(255, 255, 255, 0.4);
+          margin-top: 12px;
+          line-height: 1.6;
+        }
+
+        /* Floating CTA */
+        .floating-cta {
+          position: fixed;
+          bottom: 30px;
+          right: 30px;
+          z-index: 1001;
+          box-shadow: 0 10px 30px rgba(255, 0, 128, 0.4);
         }
 
         /* Footer */
@@ -280,6 +321,7 @@ export default function LandingScreen() {
           color: rgba(255, 255, 255, 0.2);
           font-size: 13px;
         }
+
       `}</style>
 
       <nav className="navbar">
@@ -401,19 +443,69 @@ export default function LandingScreen() {
         </div>
       </section>
 
-      <section className="trust-section">
-        <div className="stats-grid">
-          <div className="stat-item">
-            <span className="stat-val">500k+</span>
-            <span className="stat-lbl">Copies Gerados</span>
+      <section className="features-section" style={{ background: 'rgba(255,255,255,0.01)' }}>
+        <span className="pre-title">Depoimentos</span>
+        <h2 style={{ fontSize: '40px', fontWeight: 900, marginBottom: '20px' }}>Império de Resultados</h2>
+        <p style={{ color: 'rgba(255,255,255,0.4)', maxWidth: '600px', margin: '0 auto' }}>
+          Veja o que dizem os empreendedores que já automatizaram seu marketing.
+        </p>
+
+        <div className="testimonial-grid">
+          {[
+            { name: "Lucas Almeida", role: "Drop-shipper", initial: "L", text: "O Calendário de 30 dias me economiza 4 horas por semana. É bizarro o quanto a IA entende do meu nicho." },
+            { name: "Bruna Silva", role: "Infoprodutora", initial: "B", text: "O Modo Espelho é a melhor função que já vi. Meus e-mails agora parecem que foram escritos por mim, só que 10x melhores." },
+            { name: "Ricardo Santos", role: "Agência Digital", initial: "R", text: "Uso em todos os clientes. O Score de Conversão me ajuda a provar para o cliente que a copy vai vender." }
+          ].map((t, idx) => (
+            <motion.div 
+              key={idx}
+              whileHover={{ scale: 1.05 }}
+              className="testimonial-card"
+            >
+              <div className="user-info">
+                <div className="user-avatar">{t.initial}</div>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '15px' }}>{t.name}</div>
+                  <div style={{ fontSize: '10px', color: '#ff0080', fontWeight: 900, textTransform: 'uppercase' }}>{t.role}</div>
+                </div>
+              </div>
+              <p style={{ fontSize: '13px', color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>"{t.text}"</p>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      <section className="faq-section">
+        <span className="pre-title" style={{ textAlign: 'center', width: '100%' }}>FAQ</span>
+        <h2 style={{ fontSize: '40px', fontWeight: 900, marginBottom: '40px', textAlign: 'center' }}>Dúvidas Frequentes</h2>
+        
+        {[
+          { q: "A IA escreve como eu mesmo?", a: "Sim! Com o nosso exclusivo 'Modo Espelho' (PRO), você treina a IA com seus próprios textos e ela aprende seu vocabulário e tom de voz." },
+          { q: "Posso cancelar a assinatura quando quiser?", a: "Sem pegadinhas. Você pode cancelar sua assinatura mensal ou anual a qualquer momento direto pelo seu painel de configurações." },
+          { q: "Funciona para qualquer nicho?", a: "Absolutamente. Nossa IA foi treinada em mais de 12 nichos diferentes, do Dropshipping à Advocacia, garantindo termos técnicos corretos." },
+          { q: "O pagamento é seguro?", a: "Utilizamos o Mercado Pago como processador oficial. Seus dados estão 100% protegidos por criptografia de ponta a ponta." }
+        ].map((item, idx) => (
+          <div key={idx} className="faq-item">
+            <div className="faq-question">
+              {item.q} <ArrowRight size={16} color="#ff0080" />
+            </div>
+            <div className="faq-answer">{item.a}</div>
           </div>
-          <div className="stat-item">
-            <span className="stat-val">12k+</span>
-            <span className="stat-lbl">Membros Ativos</span>
+        ))}
+      </section>
+
+      <section className="trust-section" style={{ padding: '100px 10%', background: 'rgba(121, 40, 202, 0.02)', textAlign: 'center' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '80px', marginBottom: '100px' }}>
+          <div style={{ textAlign: 'center' }}>
+            <span style={{ fontSize: '48px', fontWeight: 900, display: 'block' }}>500k+</span>
+            <span style={{ fontSize: '12px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.3)' }}>Copies Gerados</span>
           </div>
-          <div className="stat-item">
-            <span className="stat-val">98%</span>
-            <span className="stat-lbl">Aprovação IA</span>
+          <div style={{ textAlign: 'center' }}>
+            <span style={{ fontSize: '48px', fontWeight: 900, display: 'block' }}>12k+</span>
+            <span style={{ fontSize: '12px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.3)' }}>Membros Ativos</span>
+          </div>
+          <div style={{ textAlign: 'center' }}>
+            <span style={{ fontSize: '48px', fontWeight: 900, display: 'block' }}>98%</span>
+            <span style={{ fontSize: '12px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.2em', color: 'rgba(255,255,255,0.3)' }}>Aprovação IA</span>
           </div>
         </div>
 
@@ -427,6 +519,17 @@ export default function LandingScreen() {
         <p>© 2024 Império Copy — Inteligência Artificial para Empreendedores.</p>
         <p style={{ marginTop: '10px' }}>Feito com ❤️ por quem entende de escala.</p>
       </footer>
+
+      <motion.button 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        whileHover={{ scale: 1.1 }}
+        onClick={() => navigate('/auth')}
+        className="primary-btn floating-cta"
+      >
+        <Zap size={18} /> Começar Grátis
+      </motion.button>
     </div>
   );
 }
+

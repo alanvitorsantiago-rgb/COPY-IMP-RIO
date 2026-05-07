@@ -20,7 +20,9 @@ export default function UpgradeScreen() {
           userEmail: user?.email,
           userName: user?.name,
           planType: planType,
+          userId: user?.id
         }),
+
       });
 
       const data = await response.json();

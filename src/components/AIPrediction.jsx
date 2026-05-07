@@ -1,7 +1,7 @@
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 import { motion } from 'framer-motion';
 
-export default function AIPrediction({ score = 80, data = [] }) {
+export default function AIPrediction({ score = 80, radarData = [], tip = '' }) {
   // Axis: Psychology, Urgency, Clarity, Value, Social Proof
   const defaultData = [
     { subject: 'PSICOLOGIA', A: score - 5, fullMark: 100 },
@@ -11,7 +11,8 @@ export default function AIPrediction({ score = 80, data = [] }) {
     { subject: 'PROVA', A: score - 10, fullMark: 100 },
   ];
 
-  const chartData = data.length > 0 ? data : defaultData;
+  const chartData = radarData.length > 0 ? radarData : defaultData;
+
 
   return (
     <div className="ai-prediction-module">
@@ -133,6 +134,32 @@ export default function AIPrediction({ score = 80, data = [] }) {
             <p className="stat-status status-optimal">ÓTIMA</p>
          </div>
       </div>
+
+      {tip && (
+        <motion.div 
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          style={{
+            marginTop: '20px',
+            padding: '12px 15px',
+            background: 'rgba(255, 0, 128, 0.05)',
+            border: '1px solid rgba(255, 0, 128, 0.1)',
+            borderRadius: '12px',
+            width: '100%',
+            display: 'flex',
+            gap: '10px'
+          }}
+        >
+          <div style={{ color: '#ff0080', flexShrink: 0, marginTop: '2px' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          </div>
+          <div>
+            <p style={{ fontSize: '9px', fontWeight: 900, color: '#ff0080', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '4px' }}>Dica de Otimização</p>
+            <p style={{ fontSize: '11px', color: 'rgba(255,255,255,0.7)', lineHeight: 1.4, fontWeight: 500 }}>{tip}</p>
+          </div>
+        </motion.div>
+      )}
     </div>
   );
 }
+
