@@ -335,7 +335,7 @@ export default function LandingScreen() {
             boxShadow: '0 0 20px rgba(255, 0, 128, 0.2)',
             display: 'flex',
             alignItems: 'center',
-            justify-content: 'center'
+            justifyContent: 'center'
           }}>
             <div style={{ width: '100%', height: '100%', borderRadius: '50%', overflow: 'hidden' }}>
               <img 
